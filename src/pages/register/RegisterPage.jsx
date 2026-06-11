@@ -2,6 +2,8 @@ import { useSelector } from "react-redux"
 import { Navigate, Link } from "react-router"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import RegisterForm from "../../components/register/RegisterForm"
+import { BookOpen } from "lucide-react"
+
 
 const RegisterPage = () => {
   const token = useSelector(state => state.auth.token)
@@ -11,7 +13,8 @@ const RegisterPage = () => {
     <div className="auth-container">
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
-          <div className="text-4xl mb-2">📚</div>
+          
+          <BookOpen className="size-8 text-primary mx-auto mb-2" />
           <CardTitle className="text-2xl font-black uppercase tracking-tight">
             Crear cuenta
           </CardTitle>

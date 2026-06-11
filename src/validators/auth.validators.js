@@ -46,4 +46,7 @@ export const registerSchema = Joi.object({
       "any.only": "Las contraseñas no coinciden",
       "any.required": "Repetí la contraseña",
     }),
+  role: Joi.string()
+    .valid("student", "instructor")
+    .default("student"),
 })

@@ -10,6 +10,7 @@ import { Input } from "../ui/input"
 import { Alert, AlertDescription } from "../ui/alert"
 import { Label } from "../ui/label"
 import { Switch } from "../ui/switch"
+
 import api from "../../api/api"
 
 const RegisterForm = () => {
