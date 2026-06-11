@@ -1,7 +1,7 @@
+import { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import { Label, Pie, PieChart } from "recharts"
-
-// Importaciones de shadcn/ui
+import api from "../../api/api"
 import {
   Card,
   CardContent,
@@ -9,28 +9,48 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card"
-import { 
-  ChartContainer, 
-  ChartTooltip, 
-  ChartTooltipContent 
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent
 } from "../ui/chart"
 
-const UsageChart = () => {
-  const { courses } = useSelector((state) => state.courses)
+const COLORS = [
+  "#3b82f6",
+  "#22c55e",
+  "#f59e0b",
+  "#ec4899",
+  "#f97316",
+  "#8b5cf6",
+  "#10b981",
+  "#06b6d4",
+]
 
-  const COLORS = [
-    "#3b82f6", // azul
-    "#22c55e", // verde
-    "#f59e0b", // ámbar
-    "#ec4899", // rosa
-    "#f97316", // naranja
-    "#8b5cf6", // violeta
-    "#10b981", // esmeralda
-    "#06b6d4", // cyan
-  ]
+const UsageChart = () => {
+  const { user } = useSelector((state) => state.auth)
+  const [allCourses, setAllCourses] = useState([])
+const { courses } = useSelector((state) => state.courses)
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        let res
+        if (user?.role === "instructor") {
+          res = await api.get(`/users/${user.id}/courses?page=1&limit=1000`)
+        } else {
+          res = await api.get(`/courses?page=1&limit=1000`)
+        }
+        const list = res.data.courses?.courses ?? []
+        setAllCourses(Array.isArray(list) ? list : [])
+      } catch {
+        // silently fail
+      }
+    }
+    fetchAll()
+  }, [user, courses.length])
 
   const dataMap = {}
-  courses.forEach((course) => {
+  allCourses.forEach((course) => {
     const nombre =
       typeof course.categoria === "object"
         ? course.categoria?.nombre || "Sin categoría"
@@ -43,14 +63,8 @@ const UsageChart = () => {
   const data = Object.entries(dataMap).map(([nombre, cantidad], index) => {
     const colorKey = nombre.toLowerCase().replace(/[^a-z0-9]/g, "_")
     const color = COLORS[index % COLORS.length]
-
     chartConfig[colorKey] = { label: nombre, color }
-
-    return {
-      category: nombre,
-      cantidad,
-      fill: color,  // ← hex directo, sin var()
-    }
+    return { category: nombre, cantidad, fill: color }
   })
 
   const totalCourses = data.reduce((acc, curr) => acc + curr.cantidad, 0)
@@ -63,7 +77,6 @@ const UsageChart = () => {
         <CardTitle className="text-xl font-bold tracking-tight">Distribución de Cursos</CardTitle>
         <CardDescription>Cursos activos desglosados por categoría.</CardDescription>
       </CardHeader>
-
       <CardContent className="flex-1 pb-0 pt-2">
         <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-75">
           <PieChart>
