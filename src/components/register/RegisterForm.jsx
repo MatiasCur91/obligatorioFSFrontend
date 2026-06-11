@@ -10,7 +10,6 @@ import { Input } from "../ui/input"
 import { Alert, AlertDescription } from "../ui/alert"
 import { Label } from "../ui/label"
 import { Switch } from "../ui/switch"
-
 import api from "../../api/api"
 
 const RegisterForm = () => {
@@ -26,14 +25,15 @@ const RegisterForm = () => {
   } = useForm({
     resolver: joiResolver(registerSchema),
     mode: "onChange",
-    defaultValues: { role: "student" }
+    defaultValues: { role: "estudiante" }
   })
 
   const isInstructor = watch("role") === "instructor"
 
   const procesarForm = async (data) => {
     try {
-      const res = await api.post("/auth/register", data)
+      const { confirmPassword, ...dataToSend } = data
+      const res = await api.post("/auth/register", dataToSend)
       dispatch(setCredentials({
         user: res.data.user,
         token: res.data.token,
@@ -89,7 +89,6 @@ const RegisterForm = () => {
         )}
       </div>
 
-      {/* Switch de rol */}
       <div className="flex items-center justify-between rounded-lg border p-4">
         <div className="space-y-0.5">
           <Label htmlFor="role-switch" className="text-sm font-medium cursor-pointer">
@@ -108,7 +107,7 @@ const RegisterForm = () => {
             <Switch
               id="role-switch"
               checked={field.value === "instructor"}
-              onCheckedChange={(checked) => field.onChange(checked ? "instructor" : "student")}
+              onCheckedChange={(checked) => field.onChange(checked ? "instructor" : "estudiante")}
             />
           )}
         />

@@ -47,6 +47,6 @@ export const registerSchema = Joi.object({
       "any.required": "Repetí la contraseña",
     }),
   role: Joi.string()
-    .valid("student", "instructor")
-    .default("student"),
+  .valid("estudiante", "instructor")
+  .default("estudiante"),
 })
