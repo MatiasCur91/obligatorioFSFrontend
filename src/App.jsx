@@ -21,6 +21,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<ContainerPage />}>
               <Route index            element={<LoginPage />} />
+              <Route path="login" element={<LoginPage />} />
               <Route path="register"  element={<RegisterPage />} />
               <Route element={<ProtectedRoute />}>
                 <Route element={<DashboardLayout />}>

@@ -15,10 +15,12 @@ import {
   SidebarMenuButton,
   SidebarHeader,
   SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const AppSidebar = () => {
+  const { setOpenMobile } = useSidebar()  //
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
@@ -27,10 +29,11 @@ const AppSidebar = () => {
   const isInstructor = user?.role === "instructor"
   const isActive = (path) => location.pathname === path
 
-  const handleLogout = () => {
-    dispatch(logout())
-    navigate("/")
-  }
+ const handleLogout = () => {
+  dispatch(logout())
+  // ProtectedRoute se encarga de redirigir cuando el token sea null
+  // no navegamos manualmente
+}
 
   const menuItems = [
     { label: isInstructor ? "Mis Cursos" : "Cursos", icon: LayoutDashboard, to: "/dashboard" },
@@ -62,7 +65,7 @@ const AppSidebar = () => {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.to + item.label}>
                   <SidebarMenuButton asChild isActive={isActive(item.to)}>
-                    <Link to={item.to}>
+                    <Link to={item.to} onClick={() => setOpenMobile(false)}>
                       <item.icon className="size-4" />
                       <span>{item.label}</span>
                     </Link>

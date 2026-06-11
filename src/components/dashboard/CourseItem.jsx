@@ -64,7 +64,7 @@ const CourseItem = ({ course, isInstructor, onEdit, onDelete }) => {
           </CardHeader>
 
           <CardContent className="p-4 pt-2 space-y-3">
-            <h3 className="text-base font-bold tracking-tight line-clamp-2 min-h-[3rem]">
+            <h3 className="text-base font-bold tracking-tight line-clamp-2 min-h-12">
               {course.nombre}
             </h3>
 
@@ -93,7 +93,7 @@ const CourseItem = ({ course, isInstructor, onEdit, onDelete }) => {
           </CardContent>
         </div>
 
-        <CardContent className="p-4 pt-0 flex items-center justify-between border-t mt-4 bg-muted/5 min-h-[52px]">
+        <CardContent className="p-4 pt-0 flex items-center justify-between border-t mt-4 bg-muted/5 min-h-13">
           <Button variant="outline" size="sm" onClick={() => setViewOpen(true)} className="gap-1.5 h-8">
             <Eye className="h-3.5 w-3.5" />
             Ver detalles

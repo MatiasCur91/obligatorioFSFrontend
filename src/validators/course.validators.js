@@ -13,13 +13,9 @@ export const courseSchema = Joi.object({
     .messages({
       "string.empty": "La categoría es obligatoria",
     }),
-  descripcion: Joi.string()
-    .min(10)
-    .required()
-    .messages({
-      "string.empty": "La descripción es obligatoria",
-      "string.min": "Mínimo 10 caracteres",
-    }),
+  descripcion: Joi.string().allow('').optional().messages({
+  'string.base': 'La descripción debe ser un texto válido',
+}),
   temas: Joi.string()
     .required()
     .messages({

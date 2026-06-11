@@ -97,7 +97,7 @@ const PlanUpgrade = () => {
               <Sparkles className={`h-4 w-4 ${isPremium ? "text-amber-500 fill-amber-500" : "text-muted-foreground"}`} />
               Modo Premium Ilimitado
             </Label>
-            <p className="text-xs text-muted-foreground leading-normal max-w-[340px]">
+            <p className="text-xs text-muted-foreground leading-normal max-w-85">
               {isPremium 
                 ? "Disfrutas de acceso total. Puedes crear y publicar cursos de forma ilimitada." 
                 : "Quita las restricciones de cupos y publica todos los cursos que desees."}

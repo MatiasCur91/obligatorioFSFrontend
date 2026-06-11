@@ -11,7 +11,6 @@ import { Loader2 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -36,7 +35,7 @@ const CourseModal = ({ open, onOpenChange, course, categories, onSaved }) => {
     defaultValues: isEditing
       ? {
           nombre: course.nombre,
-          descripcion: course.descripcion,
+          descripcion: course.descripcion, 
           temas: course.temas,
           link: course.link,
           thumbnail: course.thumbnail,
@@ -47,15 +46,19 @@ const CourseModal = ({ open, onOpenChange, course, categories, onSaved }) => {
   })
 
   const procesarForm = async (data) => {
+    // === LIMPIEZA TOTAL ===
+    // Extraemos descripcion, thumbnail y duracion para que NO viajen al backend en el POST/PUT
+    const { descripcion, thumbnail, duracion, ...datosLimpios } = data
+
     try {
       if (isEditing) {
-        const res = await api.put(`/courses/${course._id}`, data)
-        dispatch(updateCourse(res.data.course ?? { ...course, ...data }))
+        const res = await api.put(`/courses/${course._id}`, datosLimpios)
+        dispatch(updateCourse(res.data.course ?? { ...course, ...datosLimpios }))
         toast.success("Curso actualizado")
       } else {
-        const res = await api.post("/courses", data)
+        const res = await api.post("/courses", datosLimpios)
         dispatch(addCourse(res.data.course))
-        toast.success("Curso creado")
+        toast.success("Curso creado con éxito")
       }
       onSaved()
       onOpenChange(false)
@@ -72,17 +75,21 @@ const CourseModal = ({ open, onOpenChange, course, categories, onSaved }) => {
             {isEditing ? "Editar curso" : "Crear nuevo curso"}
           </DialogTitle>
         </DialogHeader>
+        
         <DialogDescription className="sr-only">
-            {isEditing ? "Editar curso" : "Crear nuevo curso"}
-          </DialogDescription>
+          {isEditing ? "Editar curso" : "Crear nuevo curso"}
+        </DialogDescription>
 
         <form onSubmit={handleSubmit(procesarForm)} className="flex-1 overflow-y-auto p-6 pt-2 space-y-4">
+          
+          {/* Nombre */}
           <div className="space-y-1.5">
             <Label htmlFor="nombre" className="text-sm font-semibold">Nombre del curso</Label>
             <Input id="nombre" {...register("nombre")} placeholder="Ej: Introducción a React" />
             {errors.nombre && <p className="text-xs font-medium text-destructive">{errors.nombre.message}</p>}
           </div>
 
+          {/* Categoría */}
           <div className="space-y-1.5">
             <Label htmlFor="categoria" className="text-sm font-semibold">Categoría</Label>
             <Select
@@ -103,50 +110,38 @@ const CourseModal = ({ open, onOpenChange, course, categories, onSaved }) => {
             {errors.categoria && <p className="text-xs font-medium text-destructive">{errors.categoria.message}</p>}
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="descripcion" className="text-sm font-semibold">Descripción</Label>
-            {/* Reemplazado por Textarea de shadcn */}
-            <Textarea
-              id="descripcion"
-              rows={4}
-              placeholder="Escribe un resumen detallado sobre los objetivos del curso..."
-              {...register("descripcion")}
-              className="resize-none"
-            />
-            {errors.descripcion && <p className="text-xs font-medium text-destructive">{errors.descripcion.message}</p>}
-          </div>
-
+          {/* Temas */}
           <div className="space-y-1.5">
             <Label htmlFor="temas" className="text-sm font-semibold">Temas principales</Label>
-            <Input id="temas" {...register("temas")} placeholder="Ej: Hooks, Context, Redux (separados por comas)" />
+            <Input id="temas" {...register("temas")} placeholder="Ej: Hooks, Context, Redux" />
             {errors.temas && <p className="text-xs font-medium text-destructive">{errors.temas.message}</p>}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="link" className="text-sm font-semibold">Link de YouTube</Label>
-              <Input id="link" placeholder="https://www.youtube.com/watch?v=..." {...register("link")} />
-              {errors.link && <p className="text-xs font-medium text-destructive">{errors.link.message}</p>}
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="duracion" className="text-sm font-semibold">Duración estimada</Label>
-              <Input id="duracion" placeholder="Ej: 15m 40s o 2h 30m" {...register("duracion")} />
-              {errors.duracion && <p className="text-xs font-medium text-destructive">{errors.duracion.message}</p>}
-            </div>
-          </div>
-
+          {/* Link de YouTube */}
           <div className="space-y-1.5">
-            <Label htmlFor="thumbnail" className="text-sm font-semibold">URL de la Miniatura (Thumbnail)</Label>
-            <Input id="thumbnail" placeholder="https://images.unsplash.com/..." {...register("thumbnail")} />
-            {errors.thumbnail && <p className="text-xs font-medium text-destructive">{errors.thumbnail.message}</p>}
+            <Label htmlFor="link" className="text-sm font-semibold">Link de YouTube</Label>
+            <Input id="link" placeholder="https://www.youtube.com/watch?v=..." {...register("link")} />
+            {errors.link && <p className="text-xs font-medium text-destructive">{errors.link.message}</p>}
           </div>
 
+          {/* === MINIATURA SOLO AL EDITAR === */}
+          {isEditing && course.thumbnail && (
+            <div className="space-y-1.5 border-t pt-4 mt-4">
+              <Label className="text-sm font-semibold text-muted-foreground">Miniatura actual</Label>
+              <img 
+                src={course.thumbnail} 
+                alt="Miniatura del curso" 
+                className="w-full max-h-48 object-cover rounded-md border"
+              />
+            </div>
+          )}
+
+          {/* Botones */}
           <div className="flex justify-end gap-2 pt-4 border-t sticky bottom-0 bg-background mt-6">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={!isValid || isSubmitting} className="min-w-[120px]">
+            <Button type="submit" disabled={!isValid || isSubmitting} className="min-w-30">
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
